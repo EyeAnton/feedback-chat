@@ -1,0 +1,102 @@
+/* feedback-chat (chat.js). Colours and font: override the --fc-* variables on .fc from the site's CSS. */
+.fc {
+  --fc-accent: #ec2f1f;       /* launcher hover, avatar, send button */
+  --fc-accent-text: #fff;
+  --fc-bg: rgb(10 18 38 / .92);
+  --fc-surface: #142140;      /* bot bubbles, input */
+  --fc-me: #1a4bb8;           /* visitor bubbles */
+  --fc-text: #e4e9f4;
+  --fc-strong: #fff;
+  --fc-muted: #8592ae;
+  --fc-line: #2c3f6c;
+  --fc-font: inherit;
+  --fc-radius: 20px;
+  --fc-gap: 20px;             /* distance from the screen edges */
+  --fc-lift: 0px;             /* raise the launcher above something in the corner */
+  --fc-z: 75;
+  font: 400 14px/1.45 var(--fc-font);
+}
+.fc[data-theme="light"] {
+  --fc-bg: rgb(255 255 255 / .96); --fc-surface: #eef1f6; --fc-me: #2563e0;
+  --fc-text: #1d2433; --fc-strong: #0b1020; --fc-muted: #6b7489; --fc-line: #d5dbe6;
+}
+.fc *, .fc *::before { box-sizing: border-box; }
+
+.fc-launch, .fc-box { position: fixed; bottom: max(var(--fc-gap), env(safe-area-inset-bottom)); }
+.fc[data-side="right"] :is(.fc-launch, .fc-box) { right: max(var(--fc-gap), env(safe-area-inset-right)); }
+.fc[data-side="left"] :is(.fc-launch, .fc-box) { left: max(var(--fc-gap), env(safe-area-inset-left)); }
+
+.fc-launch {
+  z-index: var(--fc-z); bottom: calc(max(var(--fc-gap), env(safe-area-inset-bottom)) + var(--fc-lift));
+  display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 18px 0 14px; margin: 0; cursor: pointer;
+  border: 1px solid var(--fc-line); border-radius: 999px;
+  background: var(--fc-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  color: var(--fc-strong); font: 600 14px/1 var(--fc-font);
+  opacity: 0; translate: 0 12px; transition: opacity .3s, translate .3s, border-color .2s, background .2s, color .2s;
+}
+.fc.in .fc-launch { opacity: 1; translate: 0 0; }
+.fc.open .fc-launch { opacity: 0; translate: 0 12px; pointer-events: none; }
+.fc-launch:hover, .fc-launch:focus-visible { border-color: var(--fc-accent); background: var(--fc-accent); color: var(--fc-accent-text); outline: none; }
+.fc svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.fc-box {
+  z-index: calc(var(--fc-z) + 11);
+  width: min(360px, calc(100vw - 32px)); height: min(520px, calc(100dvh - 40px));
+  display: flex; flex-direction: column; overflow: hidden;
+  border: 1px solid var(--fc-line); border-radius: var(--fc-radius);
+  background: var(--fc-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 24px 60px rgb(0 0 0 / .35); color: var(--fc-text);
+  opacity: 0; visibility: hidden; scale: .92; translate: 0 10px;
+  transition: opacity .25s, scale .25s, translate .25s, visibility .25s;
+}
+.fc[data-side="right"] .fc-box { transform-origin: 100% 100%; }
+.fc[data-side="left"] .fc-box { transform-origin: 0 100%; }
+.fc.open .fc-box { opacity: 1; visibility: visible; scale: 1; translate: 0 0; }
+
+.fc-head { display: flex; align-items: center; gap: 12px; padding: 14px 14px 14px 16px; border-bottom: 1px solid var(--fc-line); }
+.fc-head div { flex: 1; display: grid; gap: 2px; min-width: 0; }
+.fc-head b { color: var(--fc-strong); font-weight: 600; }
+.fc-head small { color: var(--fc-muted); font-size: 12px; }
+.fc-ava { width: 36px; height: 36px; flex: none; display: grid; place-items: center; border-radius: 50%; background: var(--fc-accent); color: var(--fc-accent-text); font-weight: 700; font-size: 13px; }
+.fc-x { width: 36px; height: 36px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--fc-muted); cursor: pointer; }
+.fc-x:hover, .fc-x:focus-visible { background: var(--fc-surface); color: var(--fc-strong); outline: none; }
+
+.fc-log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 16px; overscroll-behavior: contain; scrollbar-width: thin; }
+.fc-msg { margin: 0; color: var(--fc-text); font: inherit; text-align: left; max-width: 85%; padding: 10px 13px; border-radius: 16px; white-space: pre-line; overflow-wrap: anywhere; animation: fc-in .25s ease-out; }
+.fc-msg.bot { align-self: flex-start; background: var(--fc-surface); border-bottom-left-radius: 6px; }
+.fc-msg.me { align-self: flex-end; background: var(--fc-me); color: #fff; border-bottom-right-radius: 6px; -webkit-user-select: text; user-select: text; }
+.fc-msg.links { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; background: none; }
+.fc-msg.typing { display: flex; gap: 4px; padding: 14px 13px; }
+.fc-msg.typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--fc-muted); animation: fc-dot 1s infinite; }
+.fc-msg.typing i:nth-child(2) { animation-delay: .15s; }
+.fc-msg.typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes fc-in { from { opacity: 0; translate: 0 6px; } }
+@keyframes fc-dot { 50% { opacity: .3; translate: 0 -2px; } }
+
+.fc-foot { padding: 0 12px 12px; }
+.fc-foot:empty { display: none; }
+.fc-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.fc-chip {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; margin: 0; cursor: pointer;
+  border: 1px solid var(--fc-line); border-radius: 999px; background: none;
+  color: var(--fc-strong); font: 500 13px/1 var(--fc-font); text-decoration: none;
+  transition: border-color .2s, background .2s, color .2s;
+}
+.fc-chip:hover, .fc-chip:focus-visible { border-color: var(--fc-accent); background: var(--fc-accent); color: var(--fc-accent-text); outline: none; }
+.fc-form { display: flex; align-items: flex-end; gap: 8px; margin: 0; padding: 6px 6px 6px 14px; border: 1px solid var(--fc-line); border-radius: 22px; background: var(--fc-surface); }
+.fc-form:focus-within { border-color: var(--fc-me); }
+.fc-form textarea { flex: 1; min-height: 22px; max-height: 120px; margin: 0; padding: 7px 0; resize: none; border: 0; background: none; color: var(--fc-strong); font: inherit; outline: none; -webkit-user-select: text; user-select: text; }
+.fc-form textarea::placeholder { color: var(--fc-muted); }
+.fc-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.fc-send { width: 34px; height: 34px; flex: none; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: var(--fc-accent); color: var(--fc-accent-text); cursor: pointer; }
+.fc-skip { display: block; margin: 8px 0 0 auto; padding: 4px 6px; border: 0; background: none; color: var(--fc-muted); font: 500 12px/1 var(--fc-font); cursor: pointer; }
+.fc-skip:hover { color: var(--fc-strong); }
+
+/* phone: a round launcher, the dialog as a sheet across the bottom */
+@media (max-width: 600px) {
+  .fc { --fc-gap: 14px; }
+  .fc-launch { width: 44px; padding: 0; justify-content: center; }
+  .fc-launch span { display: none; }
+  .fc .fc-box { left: 8px; right: 8px; bottom: max(8px, env(safe-area-inset-bottom)); width: auto; height: min(560px, calc(100dvh - 72px)); }
+}
+@media (prefers-reduced-motion: reduce) { .fc-launch, .fc-box, .fc-msg, .fc-msg.typing i { transition: none; animation: none; } }

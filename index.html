@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Feedback Chat</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="chat.css">
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; min-height: 100vh; background: #050a18; color: #e4e9f4; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    main { max-width: 720px; margin: 0 auto; padding: 64px 16px 120px; }
+    h1 { margin: 0 0 8px; font-size: clamp(28px, 5vw, 40px); color: #fff; }
+    p { color: #a9b4cc; }
+    pre { overflow-x: auto; padding: 16px; border: 1px solid #1e2d52; border-radius: 12px; background: #0a1226; color: #e4e9f4; font-size: 13px; line-height: 1.5; }
+    code { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+    a { color: #7aa5ff; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 24px 0; }
+    button.t { padding: 8px 14px; border: 1px solid #2c3f6c; border-radius: 999px; background: none; color: #fff; font: inherit; cursor: pointer; }
+    button.t:hover { border-color: #ec2f1f; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Feedback Chat</h1>
+    <p>Мини-чат для любого сайта: отзыв, вопрос, CV, контакты. Отзывы и вопросы приходят в Telegram. Кнопка — справа снизу.</p>
+    <div class="row">
+      <button class="t" onclick="feedbackChat.open()">Открыть чат</button>
+      <button class="t" onclick="document.documentElement.lang = document.documentElement.lang === 'ru' ? 'en' : 'ru'">RU / EN</button>
+      <button class="t" onclick="document.querySelector('.fc').dataset.theme = document.querySelector('.fc').dataset.theme === 'light' ? '' : 'light'">Светлая / тёмная</button>
+    </div>
+    <p>Подключение — две строки перед <code>&lt;/body&gt;</code>:</p>
+<pre><code>&lt;link rel="stylesheet" href="https://eyeanton.github.io/feedback-chat/chat.css"&gt;
+&lt;script src="https://eyeanton.github.io/feedback-chat/chat.js" defer
+  data-endpoint="https://portfolio-bot.leritosha.workers.dev"
+  data-name="Anton Egorov"
+  data-cv="/assets/cv.pdf"
+  data-channels='[{"name":"Telegram","href":"https://t.me/EyeAnton"}]'&gt;&lt;/script&gt;</code></pre>
+    <p>Все настройки и шаги — в <a href="https://github.com/EyeAnton/feedback-chat#readme">README</a>.</p>
+  </main>
+  <script src="chat.js" defer
+    data-endpoint="https://portfolio-bot.leritosha.workers.dev"
+    data-name="Anton Egorov"
+    data-cv='{"ru":"https://eyeanton.github.io/assets/cv-ru.pdf","en":"https://eyeanton.github.io/assets/cv-en.pdf"}'
+    data-channels='[{"name":"Telegram","href":"https://t.me/EyeAnton"},{"name":"Email","href":"mailto:leritosha@gmail.com"},{"name":"GitHub","href":"https://github.com/EyeAnton"}]'
+    data-texts='{"ru":{"sub":"демо feedback-chat"},"en":{"sub":"feedback-chat demo"}}'></script>
+</body>
+</html>
