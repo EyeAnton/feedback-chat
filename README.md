@@ -79,4 +79,4 @@ npx wrangler deploy
 Защита от спама: только сайты из `ALLOWED_ORIGINS`, скрытое поле-ловушка, отказ при ответе быстрее 3 с, лимит длины. Лимит по IP — KV `RL` (см. `wrangler.toml`), `PER_IP_HOUR` сообщений в час.
 
 ## Где уже стоит
-- Портфолио eyeanton.github.io — своя встроенная версия (`chat.js` в репо портфолио: тексты, CV и контакты берёт из `site.json`), Worker тот же.
+- Портфолио eyeanton.github.io — компонент по ссылке; настройки задаёт `startChat` в его `app.js` (CV, контакты, адрес Worker — из `site.json`, тексты про Антона), цвета — `body .fc` в конце `style.css`.
