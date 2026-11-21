@@ -11,6 +11,19 @@
 - **chat.js / chat.css** — сам чат, без зависимостей. Раздаётся с GitHub Pages этого репо, сайты подключают его по ссылке: правка здесь сразу доходит до всех сайтов.
 - **worker/** — один Worker на все сайты. Принимает сообщения только с сайтов из `ALLOWED_ORIGINS`.
 - **skill/** — скилл Claude Code `feedback-chat`: «подключи чат обратной связи к сайту X».
+- **tests/** — офлайн-тесты Worker (Telegram и KV замоканы).
+
+Карта модулей и поток данных — [CODEMAP.md](CODEMAP.md).
+
+**Статус:** работает в проде (портфолио, демо). Зрелость — стабильный компонент; Worker постепенно обрастает служебными маршрутами для других проектов (см. CODEMAP.md, «Кто ещё пользуется Worker»).
+
+## Тесты
+Node 20+, без зависимостей и без сети:
+```
+npm test         # контракт POST /msg: origin, валидация, ловушки, лимит по IP, ошибка Telegram
+npm run check    # синтаксис chat.js и worker
+```
+Локально посмотреть чат: `python3 -m http.server 8000` в корне → http://localhost:8000. Внимание: `index.html` указывает на боевой Worker, а `localhost:8000` в нём разрешён — «Отправить» реально придёт в Telegram. Чтобы не слать, уберите `data-endpoint` (тогда откроется письмо).
 
 ## Подключить к новому сайту (2 шага)
 
@@ -77,6 +90,12 @@ npx wrangler deploy
 Сменить токен: @BotFather → `/revoke` → `npx wrangler secret put TG_TOKEN` (или Cloudflare → Workers → `portfolio-bot` → Settings → Variables and Secrets). Ни токен, ни chat id в репо не хранятся.
 
 Защита от спама: только сайты из `ALLOWED_ORIGINS`, скрытое поле-ловушка, отказ при ответе быстрее 3 с, лимит длины. Лимит по IP — KV `RL` (см. `wrangler.toml`), `PER_IP_HOUR` сообщений в час.
+
+## Свой экземпляр (другой владелец)
+`chat.js`/`chat.css` от владельца не зависят: имя, тексты, CV, контакты, цвета — настройки. Привязаны к владельцу только `endpoint` (Worker) и бот. Чтобы чат слал сообщения другому человеку:
+1. Свой бот и Worker — раздел ниже, в `wrangler.toml` поменять `name` и `ALLOWED_ORIGINS`.
+2. На сайте — `data-endpoint` на свой Worker и `data-texts` (тексты по умолчанию от первого лица: «придёт мне в Telegram»).
+3. Ссылки на `chat.js` лучше зафиксировать на теге/коммите (например, через jsDelivr `cdn.jsdelivr.net/gh/EyeAnton/feedback-chat@<тег>/chat.js`), чтобы правки здесь не меняли чужой сайт без спроса.
 
 ## Где уже стоит
 - Портфолио eyeanton.github.io — компонент по ссылке; настройки задаёт `startChat` в его `app.js` (CV, контакты, адрес Worker — из `site.json`, тексты про Антона), цвета — `body .fc` в конце `style.css`.
