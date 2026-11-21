@@ -1,0 +1,11 @@
+{
+  "name": "feedback-chat",
+  "private": true,
+  "type": "module",
+  "description": "Mini feedback chat for any site (chat.js/chat.css) + Cloudflare Worker portfolio-bot → Telegram",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test \"tests/*.test.js\"",
+    "check": "node --check chat.js && node --check worker/src/index.js"
+  }
+}

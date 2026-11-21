@@ -1,3 +1,6 @@
+# Claude Code worktrees and local session files
+.claude/
+.env
 .wrangler/
 node_modules/
 .dev.vars
