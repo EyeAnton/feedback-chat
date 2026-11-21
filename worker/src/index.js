@@ -20,9 +20,11 @@ export default {
 
     let m;
     try { m = await req.json(); } catch { return json({ error: "bad json" }, 400); }
+    if (!m || typeof m !== "object") return json({ error: "bad json" }, 400);
     const text = String(m.text || "").trim().slice(0, 2000);
     const contact = String(m.contact || "").trim().slice(0, 200);
-    if (!KINDS[m.kind] || !text) return json({ error: "empty" }, 400);
+    // own keys only: "constructor" / "__proto__" must not pass as a kind
+    if (!Object.hasOwn(KINDS, m.kind) || !text) return json({ error: "empty" }, 400);
     // bots fill the hidden field or finish in under 3 s: pretend it went through
     if (m.hp || Number(m.ms) < 3000) return json({ ok: true });
 
